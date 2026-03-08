@@ -14,8 +14,8 @@ year_month = "202201"
 url = f"https://s3.amazonaws.com/tripdata/JC-{year_month}-citibike-tripdata.csv.zip"
 
 storage_account_name = "citibikedatalake"
-container_name = "trip-data"
-sas_token = os.getenv("AZURE_SAS_TRIP_TOKEN")  
+container_name = "bronze/trip_data"
+sas_token = os.getenv("AZURE_SAS_TOKEN")  
 
 if not sas_token:
     raise ValueError("SAS token not found. Set AZURE_SAS_TRIP_TOKEN in your environment.")
@@ -34,7 +34,7 @@ container_client = blob_service_client.get_container_client(container_name)
 # Download S3 ZIP
 # -------------------------------
 response = requests.get(url)
-response.raise_for_status()  # Ensure URL is valid
+response.raise_for_status()
 
 with ZipFile(BytesIO(response.content)) as zipfile:
     for file_name in zipfile.namelist():

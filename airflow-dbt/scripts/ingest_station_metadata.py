@@ -9,8 +9,8 @@ def ingest_station_metadata(execution_date, **context):
 
     # --- Azure ADLS Gen2 credentials ---
     storage_account_name = "citibikedatalake"
-    container_name = "station-metadata"
-    sas_token = os.getenv("AZURE_SAS_STATION_TOKEN")  
+    container_name = "bronze/station_metadata"
+    sas_token = os.getenv("AZURE_SAS_TOKEN")  
 
     blob_service_client = BlobServiceClient(
         account_url=f"https://{storage_account_name}.blob.core.windows.net",
