@@ -34,3 +34,8 @@ variable "snowflake_password" {
   description = "Snowflake password"
   sensitive   = true
 }
+
+variable "azure_tenant_id" {
+  type        = string
+  description = "Azure Active Directory tenant ID (used for Snowflake storage integration)"
+}
