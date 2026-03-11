@@ -1,3 +1,10 @@
-data/raw
+data/
 venv/
 tests/
+
+# terraform
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+terraform/terraform.tfvars
+.terraform.lock.hcl
