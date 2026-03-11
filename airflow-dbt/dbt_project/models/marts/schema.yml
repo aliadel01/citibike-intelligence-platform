@@ -1,0 +1,119 @@
+version: 2
+
+models:
+  - name: dim_station
+    description: Dimension table for Citibike stations
+
+    columns:
+
+      - name: station_id
+        data_type: VARCHAR
+        description: Unique station identifier
+
+      - name: region_id
+        data_type: VARCHAR
+        description: Region identifier
+
+      - name: station_name
+        data_type: VARCHAR
+        description: Station name
+
+      - name: capacity
+        data_type: INTEGER
+        description: Number of docks at the station
+
+      - name: lat
+        data_type: FLOAT
+        description: Latitude of station
+
+      - name: lon
+        data_type: FLOAT
+        description: Longitude of station
+
+      - name: station_type
+        data_type: VARCHAR
+        description: Type of station
+
+      - name: has_kiosk
+        data_type: BOOLEAN
+        description: Whether station has kiosk
+
+      - name: eightd_has_key_dispenser
+        data_type: BOOLEAN
+        description: Whether station has key dispenser
+
+      - name: short_name
+        data_type: VARCHAR
+        description: Short station name
+
+      - name: rental_methods_array
+        data_type: VARIANT
+        description: Available rental methods
+
+      - name: external_id
+        data_type: VARCHAR
+        description: External station id
+
+      - name: electric_bike_surcharge_waiver
+        data_type: BOOLEAN
+        description: Electric bike surcharge waiver
+
+      - name: source_file
+        data_type: VARCHAR
+        description: Source file name
+
+      - name: processed_at
+        data_type: TIMESTAMP_NTZ
+        description: Processing timestamp
+
+  - name: fact_trips
+    description: Fact table for Citibike trips
+
+    columns:
+      - name: trip_id
+        data_type: VARCHAR(100)
+        description: Unique trip identifier
+
+      - name: start_time
+        data_type: TIMESTAMP_NTZ
+        description: Trip start timestamp
+
+      - name: stop_time
+        data_type: TIMESTAMP_NTZ
+        description: Trip end timestamp
+
+      - name: trip_duration_seconds
+        data_type: INTEGER
+        description: Duration of trip in seconds
+
+      - name: start_station_id
+        data_type: VARCHAR(100)
+        description: Starting station id
+
+      - name: end_station_id
+        data_type: VARCHAR(100)
+        description: Ending station id
+
+      - name: bike_id
+        data_type: VARCHAR(255)
+        description: Bike identifier
+
+      - name: user_type
+        data_type: VARCHAR(50)
+        description: Type of user (member or casual)
+
+      - name: birth_year
+        data_type: INTEGER
+        description: Birth year of rider
+
+      - name: gender
+        data_type: VARCHAR(10)
+        description: Rider gender
+
+      - name: processed_at
+        data_type: TIMESTAMP_NTZ
+        description: Timestamp when record was processed
+
+      - name: source_file
+        data_type: VARCHAR(500)
+        description: Source file where the trip came from
