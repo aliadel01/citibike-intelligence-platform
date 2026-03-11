@@ -1,0 +1,121 @@
+version: 2
+
+sources:
+  - name: external
+    description: "External tables pointing to ADLS Gen2 bronze layer"
+    database: CITIBIKE_DB
+    schema: EXTERNAL
+
+    
+    
+    
+    tables:
+      # =====================================
+      # Trips External Table
+      # =====================================
+      - name: v_trips_raw
+        
+        description: |
+          Raw Citibike trip data from CSV files in ADLS Gen2.
+          Data schema changed in 2021 - older files may have different columns.
+        external:
+          location: "@BRONZE_STAGE/trip_data"
+          file_format: CSV_FORMAT
+          pattern: ".*\\.csv"
+          metadata_columns:
+          - name: source_file
+            data_type: VARCHAR
+            expression: METADATA$FILENAME()
+
+
+
+        columns:
+          - name: ride_id
+            data_type: VARCHAR
+            description: "Unique trip identifier (maps to trip_id)"
+            tests:
+              - not_null
+
+          - name: rideable_type
+            data_type: VARCHAR
+            description: "Bike type: electric_bike, classic_bike, docked_bike"
+
+          - name: started_at
+            data_type: TIMESTAMP_NTZ
+            description: "Trip start timestamp (maps to start_time)"
+            tests:
+              - not_null
+
+          - name: ended_at
+            data_type: TIMESTAMP_NTZ
+            description: "Trip end timestamp (maps to stop_time)"
+            tests:
+              - not_null
+
+          - name: start_station_name
+            data_type: VARCHAR
+            description: "Starting station name (maps to 'name' in dim_station)"
+            tests:
+              - not_null
+
+          - name: start_station_id
+            data_type: VARCHAR
+            description: "Starting station ID (VARCHAR)"
+            tests:
+              - not_null
+
+          - name: end_station_name
+            data_type: VARCHAR
+            description: "Ending station name (maps to 'name' in dim_station)"
+            tests:
+              - not_null
+
+          - name: end_station_id
+            data_type: VARCHAR
+            description: "Ending station ID (VARCHAR)"
+            tests:
+              - not_null
+
+          - name: start_lat
+            data_type: FLOAT
+            description: "Starting station latitude (maps to 'lat')"
+
+          - name: start_lng
+            data_type: FLOAT
+            description: "Starting station longitude (maps to 'lon')"
+
+          - name: end_lat
+            data_type: FLOAT
+            description: "Ending station latitude (maps to 'lat')"
+
+          - name: end_lng
+            data_type: FLOAT
+            description: "Ending station longitude (maps to 'lon')"  
+
+          - name: member_casual
+            data_type: VARCHAR
+            description: "User type (new schema): member or casual"
+
+          - name: source_file
+            data_type: VARCHAR
+            description: "Source CSV filename"
+            
+        
+      
+      # =====================================
+      # Station Metadata External Table
+      # =====================================
+      - name: v_station_metadata
+        external:
+          location: "@BRONZE_STAGE/station_metadata"
+          file_format: JSON_FORMAT
+          pattern: ".*\\.json"
+          metadata_columns:
+          - name: source_file
+            data_type: VARCHAR
+            expression: METADATA$FILENAME()
+
+        columns:
+          - name: source_file
+            data_type: VARCHAR
+          
