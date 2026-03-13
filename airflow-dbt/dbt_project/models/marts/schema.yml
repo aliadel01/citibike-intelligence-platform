@@ -3,20 +3,25 @@ version: 2
 models:
   - name: dim_station
     description: Dimension table for Citibike stations
-
+            
     columns:
 
       - name: station_id
         data_type: VARCHAR
         description: Unique station identifier
+        tests:
+          - unique
+          - not_null
 
       - name: region_id
         data_type: VARCHAR
         description: Region identifier
 
-      - name: station_name
+      - name: name
         data_type: VARCHAR
         description: Station name
+        tests:
+          - not_null
 
       - name: capacity
         data_type: INTEGER
@@ -25,11 +30,19 @@ models:
       - name: lat
         data_type: FLOAT
         description: Latitude of station
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 40.5 AND 41.0"
 
       - name: lon
         data_type: FLOAT
         description: Longitude of station
-
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN -74.5 AND -73.5"
+              
       - name: station_type
         data_type: VARCHAR
         description: Type of station
@@ -73,10 +86,22 @@ models:
       - name: trip_id
         data_type: VARCHAR(100)
         description: Unique trip identifier
+        tests:
+          - unique:
+              config:
+                severity: error
+          - not_null:
+              config:
+                severity: error
 
       - name: start_time
         data_type: TIMESTAMP_NTZ
         description: Trip start timestamp
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "< stop_time"
+              name: "start_before_stop"
 
       - name: stop_time
         data_type: TIMESTAMP_NTZ
@@ -85,6 +110,10 @@ models:
       - name: trip_duration_seconds
         data_type: INTEGER
         description: Duration of trip in seconds
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+              name: "positive_trip_duration"
 
       - name: start_station_id
         data_type: VARCHAR(100)
@@ -93,6 +122,13 @@ models:
       - name: end_station_id
         data_type: VARCHAR(100)
         description: Ending station id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_station')
+              field: station_id
+              config:
+                severity: error
 
       - name: bike_id
         data_type: VARCHAR(255)
@@ -101,7 +137,10 @@ models:
       - name: user_type
         data_type: VARCHAR(50)
         description: Type of user (member or casual)
-
+        tests:
+          - accepted_values:
+              values: ['Subscriber', 'Customer']
+  
       - name: birth_year
         data_type: INTEGER
         description: Birth year of rider

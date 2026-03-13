@@ -36,7 +36,7 @@ LATERAL FLATTEN(input => stations) station
 
 SELECT
     value:station_id::VARCHAR AS station_id,
-    value:name::VARCHAR AS station_name,
+    value:name::VARCHAR AS name,
     value:lat::FLOAT AS lat,
     value:lon::FLOAT AS lon,
     value:capacity::INTEGER AS capacity,

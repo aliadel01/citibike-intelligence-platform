@@ -1,0 +1,91 @@
+version: 2
+
+models:
+  - name: stg_trips
+    description: "Staging trips with data quality filters applied"
+    
+    config:
+      store_failures: true  # Store failed records
+      schema: test_results
+    
+    tests:
+      # Custom test: Check for duplicate trip_ids
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ride_id
+            - started_at
+          config:
+            severity: error
+      
+      # Row count test
+      - dbt_utils.recency:
+          datepart: day
+          field: started_at
+          interval: 35
+          config:
+            severity: warn
+    
+    columns:
+      - name: ride_id
+        tests:
+          - unique
+          - not_null
+      
+      - name: started_at
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "< CURRENT_TIMESTAMP()"
+              name: "trip_not_in_future"
+      
+      - name: trip_duration_seconds
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 60 AND 86400"
+              name: "valid_trip_duration"
+              config:
+                severity: error
+                error_if: ">100"  # Allow some outliers
+      
+      - name: start_station_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_stations')
+              field: station_id
+              config:
+                severity: warn
+      
+      - name: end_station_id
+        tests:
+          - relationships:
+              to: ref('stg_stations')
+              field: station_id
+              config:
+                severity: warn
+  
+  - name: stg_stations
+    description: "Staging stations (latest version per station)"
+    
+    columns:
+      - name: station_id
+        tests:
+          - unique
+          - not_null
+      
+      - name: name
+        tests:
+          - not_null
+      
+      - name: lat
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 40.5 AND 41.0"
+      
+      - name: lon
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN -74.5 AND -73.5"

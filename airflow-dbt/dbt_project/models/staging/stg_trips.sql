@@ -73,7 +73,10 @@ cleaned AS (
         AND started_at < ended_at
         AND TIMESTAMPDIFF(SECOND, started_at, ended_at) BETWEEN 60 AND 86400  -- 1 min to 24 hours
         AND start_station_id IS NOT NULL
+        AND start_station_id IN (SELECT station_id FROM {{ref('stg_stations')}})
         AND end_station_id IS NOT NULL
+        AND end_station_id IN (SELECT station_id FROM {{ ref('stg_stations') }})
+
 )
 
 SELECT * FROM cleaned

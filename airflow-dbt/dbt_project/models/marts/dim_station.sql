@@ -25,7 +25,7 @@ SELECT
     -- Matches your exact schema
     station_id,
     region_id,
-    station_name,
+    name,
     capacity,
     lat,
     lon,
