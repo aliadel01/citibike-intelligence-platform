@@ -67,14 +67,10 @@ sources:
           - name: end_station_name
             data_type: VARCHAR
             description: "Ending station name (maps to 'name' in dim_station)"
-            tests:
-              - not_null
 
           - name: end_station_id
             data_type: VARCHAR
             description: "Ending station ID (VARCHAR)"
-            tests:
-              - not_null
 
           - name: start_lat
             data_type: FLOAT

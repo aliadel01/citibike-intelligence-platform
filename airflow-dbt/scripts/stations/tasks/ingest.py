@@ -1,14 +1,14 @@
 import os
-import json
 import requests
 from azure.storage.blob import BlobServiceClient
+from scripts.utils.get_execution_context import get_execution_context
 
-def ingest_station_metadata(execution_date, **context):
-    # --- Station metadata URL ---
+def ingest_stations_data(**context):
     url = "https://gbfs.citibikenyc.com/gbfs/en/station_information.json"
+    execution_date = get_execution_context(context).execution_date
 
     # --- Azure ADLS Gen2 credentials ---
-    storage_account_name = "citibikedatalake"
+    storage_account_name = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
     container_name = "bronze/station_metadata"
     sas_token = os.getenv("AZURE_SAS_TOKEN")  
 

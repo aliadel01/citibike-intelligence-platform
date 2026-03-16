@@ -5,6 +5,7 @@ models:
     description: "Staging trips with data quality filters applied"
     
     config:
+      tags: ["trips", "staging"]
       store_failures: true  # Store failed records
       schema: test_results
     
@@ -67,7 +68,11 @@ models:
   
   - name: stg_stations
     description: "Staging stations (latest version per station)"
-    
+    config:
+      tags: ["stations", "staging"]
+      store_failures: true
+      schema: test_results
+      
     columns:
       - name: station_id
         tests:

@@ -3,7 +3,8 @@ version: 2
 models:
   - name: dim_station
     description: Dimension table for Citibike stations
-            
+    config:
+      tags: ["stations", "dimension"]
     columns:
 
       - name: station_id
@@ -81,7 +82,8 @@ models:
 
   - name: fact_trips
     description: Fact table for Citibike trips
-
+    config:
+      tags: ["trips", "fact"]
     columns:
       - name: trip_id
         data_type: VARCHAR(100)
