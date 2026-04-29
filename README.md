@@ -29,7 +29,7 @@ A real-time + historical analytics system that helps Citibike operations team ma
    └─ Entire system reproducible in 1 command
 ```
 ### Data Flow for the Batch data:
-![Architecture Diagram](docs/batch_data_workflow.png)
+![Architecture Diagram](docs/architecture.png)
 
 ## Business Problems Solved
 
