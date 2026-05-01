@@ -70,7 +70,7 @@ resource "snowflake_storage_integration" "azure" {
 
 # Look up the Snowflake service principal in Azure AD (created after first apply + consent)
 data "azuread_service_principal" "snowflake" {
-  display_name = snowflake_storage_integration.azure.azure_multi_tenant_app_name
+  client_id = "d5503ce4-531f-4ede-ad2c-81dedd6718e5"
 }
 
 # Grant Snowflake's service principal read access to the storage account
@@ -79,7 +79,10 @@ resource "azurerm_role_assignment" "snowflake_storage" {
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = data.azuread_service_principal.snowflake.object_id
 }
-
+output "snowflake_consent_url" {
+  description = "Consent URL for Snowflake Azure Integration"
+  value       = snowflake_storage_integration.azure.azure_consent_url
+}
 # File Formats
 resource "snowflake_file_format" "csv_format" {
   name     = "CSV_FORMAT"
