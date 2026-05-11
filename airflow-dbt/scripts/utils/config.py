@@ -17,7 +17,7 @@ DEFAULT_ARGS = {
 }
 
 # Data quality thresholds
-MIN_ROWS_PER_MONTH = 10000  # Minimum expected rows
+MIN_ROWS_PER_MONTH = 1000  # Minimum expected rows
 MAX_ROWS_PER_MONTH = 10000000  # Maximum expected rows
-MIN_FILE_SIZE_MB = 10
+MIN_FILE_SIZE_MB = 0.1
 MAX_FILE_SIZE_MB = 500

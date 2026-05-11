@@ -36,18 +36,15 @@ WITH base_trips AS (
 )
 
 SELECT
-    -- Matches your exact schema
     ride_id::VARCHAR(100) AS trip_id,
     started_at AS start_time,
     ended_at AS stop_time,
     trip_duration_seconds::INTEGER AS trip_duration_seconds,
     start_station_id::VARCHAR(100) AS start_station_id,
     end_station_id::VARCHAR(100) AS end_station_id,
-    bike_id::VARCHAR(255) AS bike_id,
-    user_type::VARCHAR(50) AS user_type,
-    birth_year::INTEGER AS birth_year,
-    gender::VARCHAR(10) AS gender,
-    processed_at,
-    source_file::VARCHAR(500) AS source_file
+    member_casual,
+    rideable_type,
+    processed_at::TIMESTAMP_NTZ AS processed_at,
+    sourcefile::VARCHAR(500) AS sourcefile
     
 FROM base_trips

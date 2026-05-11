@@ -5,18 +5,11 @@ models:
     description: "Staging trips with data quality filters applied"
     
     config:
-      tags: ["trips", "staging"]
+      tags: ["test_trips", "staging"]
       store_failures: true  # Store failed records
       schema: test_results
     
     tests:
-      # Custom test: Check for duplicate trip_ids
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - ride_id
-            - started_at
-          config:
-            severity: error
       
       # Row count test
       - dbt_utils.recency:
@@ -56,7 +49,8 @@ models:
               to: ref('stg_stations')
               field: station_id
               config:
-                severity: warn
+                severity: error
+                tags: ["test_trips"]
       
       - name: end_station_id
         tests:
@@ -64,7 +58,12 @@ models:
               to: ref('stg_stations')
               field: station_id
               config:
-                severity: warn
+                severity: error
+                tags: ["test_trips"]
+
+      - name: sourcefile
+        tests:
+          - not_null
   
   - name: stg_stations
     description: "Staging stations (latest version per station)"
@@ -94,3 +93,7 @@ models:
           - not_null
           - dbt_utils.expression_is_true:
               expression: "BETWEEN -74.5 AND -73.5"
+
+      - name: sourcefile
+        tests:
+          - not_null

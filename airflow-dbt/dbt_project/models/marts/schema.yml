@@ -43,18 +43,6 @@ models:
           - not_null
           - dbt_utils.expression_is_true:
               expression: "BETWEEN -74.5 AND -73.5"
-              
-      - name: station_type
-        data_type: VARCHAR
-        description: Type of station
-
-      - name: has_kiosk
-        data_type: BOOLEAN
-        description: Whether station has kiosk
-
-      - name: eightd_has_key_dispenser
-        data_type: BOOLEAN
-        description: Whether station has key dispenser
 
       - name: short_name
         data_type: VARCHAR
@@ -64,17 +52,11 @@ models:
         data_type: VARIANT
         description: Available rental methods
 
-      - name: external_id
-        data_type: VARCHAR
-        description: External station id
-
-      - name: electric_bike_surcharge_waiver
-        data_type: BOOLEAN
-        description: Electric bike surcharge waiver
-
-      - name: source_file
+      - name: sourcefile
         data_type: VARCHAR
         description: Source file name
+        tests:
+          - not_null
 
       - name: processed_at
         data_type: TIMESTAMP_NTZ
@@ -83,7 +65,7 @@ models:
   - name: fact_trips
     description: Fact table for Citibike trips
     config:
-      tags: ["trips", "fact"]
+      tags: ["test_trips", "fact"]
     columns:
       - name: trip_id
         data_type: VARCHAR(100)
@@ -120,10 +102,6 @@ models:
       - name: start_station_id
         data_type: VARCHAR(100)
         description: Starting station id
-
-      - name: end_station_id
-        data_type: VARCHAR(100)
-        description: Ending station id
         tests:
           - not_null
           - relationships:
@@ -131,30 +109,41 @@ models:
               field: station_id
               config:
                 severity: error
+                tags: ["test_trips"]
 
-      - name: bike_id
-        data_type: VARCHAR(255)
-        description: Bike identifier
+      - name: end_station_id
+        data_type: VARCHAR(100)
+        description: Ending station id
+        tests:
+          - relationships:
+              to: ref('dim_station')
+              field: station_id
+              config:
+                severity: error
+                tags: ["test_trips"]
 
-      - name: user_type
+      - name: member_casual
         data_type: VARCHAR(50)
         description: Type of user (member or casual)
         tests:
           - accepted_values:
-              values: ['Subscriber', 'Customer']
-  
-      - name: birth_year
-        data_type: INTEGER
-        description: Birth year of rider
+              values: ['member', 'casual']
 
-      - name: gender
-        data_type: VARCHAR(10)
-        description: Rider gender
+      - name: rideable_type
+        data_type: VARCHAR(50)
+        description: Type of bike (e.g., classic, electric)
+        tests:
+          - accepted_values:
+              values: ['classic_bike', 'electric_bike', 'docked_bike']
 
       - name: processed_at
         data_type: TIMESTAMP_NTZ
         description: Timestamp when record was processed
+        tests:
+          - not_null
 
-      - name: source_file
+      - name: sourcefile
         data_type: VARCHAR(500)
         description: Source file where the trip came from
+        tests:
+          - not_null

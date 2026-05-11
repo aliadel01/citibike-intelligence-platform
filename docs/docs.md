@@ -1,11 +1,14 @@
 
-## Terraform
-IaC will create the following resources in Azure and Snowflake:
-### 🔵 Azure
+# Citibike Technical Documentation
+## Data Engineering Phase
+
+### Terraform
+Using IaC to create the following resources:
+#### 🔵 Azure
 - Resource Group
 - ADLS Gen2 Storage Account
 - Container (bronze)
-### ❄️ Snowflake
+#### ❄️ Snowflake
 - Warehouse (CITIBIKE_DWH)
 - Database (CITIBIKE_DB)
 - Schemas (EXTERNAL, SILVER, GOLD)
@@ -13,8 +16,8 @@ IaC will create the following resources in Azure and Snowflake:
 - An External Stage (BRONZE_STAGE)
 - Storage Integration
 
-## Data
-1. **Batch** Data
+### Data Sources
+1. **Batch** Processed Data
 - Trip Data
 - Station Metadata
 2. **Real-Time** Data
@@ -23,31 +26,23 @@ IaC will create the following resources in Azure and Snowflake:
 - **Weather** Data
 - Calendar / Events
 
-## Data Modeling
-![Data Model](schema.jpg)
+### Airflow
+Two DAGs:
+- citibike_monthly_stations_ingestion
+![alt text](images/citibike_monthly_stations_ingestion.png)    
+- citibike_trips_ingestion
+![alt text](images/citibike_trips_ingestion.png)
 
+## Analytics Engineering Phase
+Using dbt
+### Data Modeling & Warehouse
+![Data Model](images/schema.jpg)
 - Trips Data -> fact_trips
-    - birth_year removed in 2021 for privacy
-    - gender removed in 2021 for privacy
 - Station Metadata -> dim_station
-    - Delete rental_uris
-    - keep json as it is
-
-## Airflow
-- Ingest the trips data monthly start with 01-2021
-
-
-### Data Flow:
-1. Download CSV from Citibike S3
-2. Validate file (size, columns, row count)
-3. Upload to ADLS Bronze
-4. Refresh Snowflake external table
-5. Run dbt (Silver + Gold)
-6. Run dbt tests
-7. Data quality checks
-8. Send alerts
-
-## dbt
+### Data Quality
 Stage-gate approach: external → validate → staging → validate → marts
-### Tests
-- shcema.yml for each model
+
+## Data Analytics Phase
+### Power BI Dashboards
+### Reverse ETL for 
+## Machine Learning Phase

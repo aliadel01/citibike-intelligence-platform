@@ -1,33 +1,33 @@
 version: 2
 
+# Note: Schema changed in 2021
+# - Old schema (2013-2020): Has bike_id, birth_year, gender, usertype
+# - New schema (2021+): Has member_casual (usertype in old schema), rideable_type, NO bike_id/birth_year/gender
+# but we will only work with (2021+) schema for this project, so we can ignore the old columns
+
 sources:
   - name: external
     description: "External tables pointing to ADLS Gen2 bronze layer"
     database: CITIBIKE_DB
     schema: EXTERNAL
-
-    
-    
     
     tables:
       # =====================================
       # Trips External Table
       # =====================================
       - name: v_trips_raw
+        freshness:
+            warn_after: {count: 33, period: day}
+            error_after: {count: 35, period: day}
+        loaded_at_field: started_at
         
         description: |
           Raw Citibike trip data from CSV files in ADLS Gen2.
           Data schema changed in 2021 - older files may have different columns.
         external:
-          location: "@BRONZE_STAGE/trip_data"
+          location: "@BRONZE_STAGE/trip_data_validated"
           file_format: CSV_FORMAT
           pattern: ".*\\.csv"
-          metadata_columns:
-          - name: source_file
-            data_type: VARCHAR
-            expression: METADATA$FILENAME()
-
-
 
         columns:
           - name: ride_id
@@ -75,10 +75,14 @@ sources:
           - name: start_lat
             data_type: FLOAT
             description: "Starting station latitude (maps to 'lat')"
+            tests:
+              - not_null
 
           - name: start_lng
             data_type: FLOAT
             description: "Starting station longitude (maps to 'lon')"
+            tests:
+              - not_null
 
           - name: end_lat
             data_type: FLOAT
@@ -91,10 +95,12 @@ sources:
           - name: member_casual
             data_type: VARCHAR
             description: "User type (new schema): member or casual"
-
-          - name: source_file
-            data_type: VARCHAR
-            description: "Source CSV filename"
+            tests:
+              - accepted_values:
+                  values: ['member', 'casual']
+                  quote: true
+                  config:
+                    severity: warn
             
         
       
@@ -103,15 +109,6 @@ sources:
       # =====================================
       - name: v_station_metadata
         external:
-          location: "@BRONZE_STAGE/station_metadata"
+          location: "@BRONZE_STAGE/station_metadata_validated"
           file_format: JSON_FORMAT
           pattern: ".*\\.json"
-          metadata_columns:
-          - name: source_file
-            data_type: VARCHAR
-            expression: METADATA$FILENAME()
-
-        columns:
-          - name: source_file
-            data_type: VARCHAR
-          

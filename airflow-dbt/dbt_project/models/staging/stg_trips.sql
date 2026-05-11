@@ -16,11 +16,13 @@
   
   Note: Schema changed in 2021
   - Old schema (2013-2020): Has bike_id, birth_year, gender, usertype
-  - New schema (2021+): Has member_casual, rideable_type, NO bike_id/birth_year/gender
+  - New schema (2021+): Has member_casual (usertype in old schema), rideable_type, NO bike_id/birth_year/gender
+  but we will only work with (2021+) schema for this project, so we can ignore the old columns
+
 */
 
 WITH source AS (
-    SELECT * FROM {{ source('external', 'v_trips_raw') }}
+    SELECT *, METADATA$FILENAME AS sourcefile  FROM {{ source('external', 'v_trips_raw') }}
     
     {% if is_incremental() %}
     -- Only process new trips
@@ -44,39 +46,14 @@ cleaned AS (
         start_station_id::VARCHAR(100) AS start_station_id,
         end_station_id::VARCHAR(100) AS end_station_id,
         
-        -- User info - map new schema to old schema
-        -- New schema: member_casual ('member' or 'casual')
-        -- Old schema: user_type ('Subscriber' or 'Customer')
         member_casual,
         rideable_type,
-        CASE 
-            WHEN member_casual = 'member' THEN 'Subscriber'
-            WHEN member_casual = 'casual' THEN 'Customer'
-            ELSE member_casual  -- Pass through if old data
-        END AS user_type,
-        
-        -- Legacy fields (will be NULL for new data)
-        NULL AS bike_id,     -- Not in new schema
-        NULL AS birth_year,  -- Removed in 2021 for privacy
-        NULL AS gender,      -- Removed in 2021 for privacy
         
         -- Metadata
-        source_file,
+        sourcefile,
         CURRENT_TIMESTAMP()::TIMESTAMP_NTZ AS processed_at
         
     FROM source
-    WHERE 
-        -- Data quality filters
-        ride_id IS NOT NULL
-        AND started_at IS NOT NULL
-        AND ended_at IS NOT NULL
-        AND started_at < ended_at
-        AND TIMESTAMPDIFF(SECOND, started_at, ended_at) BETWEEN 60 AND 86400  -- 1 min to 24 hours
-        AND start_station_id IS NOT NULL
-        AND start_station_id IN (SELECT station_id FROM {{ref('stg_stations')}})
-        AND end_station_id IS NOT NULL
-        AND end_station_id IN (SELECT station_id FROM {{ ref('stg_stations') }})
-
 )
 
 SELECT * FROM cleaned

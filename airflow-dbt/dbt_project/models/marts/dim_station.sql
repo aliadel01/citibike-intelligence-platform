@@ -29,14 +29,9 @@ SELECT
     capacity,
     lat,
     lon,
-    station_type,
-    has_kiosk,
-    eightd_has_key_dispenser,
     short_name,
     rental_methods_array,
-    external_id,
-    electric_bike_surcharge_waiver,
-    source_file,
+    sourcefile,
     processed_at
     
 FROM {{ ref('stg_stations') }}

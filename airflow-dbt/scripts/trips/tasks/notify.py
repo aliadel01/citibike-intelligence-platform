@@ -1,5 +1,6 @@
 import logging
-
+import os
+from airflow.utils.email import send_email
 logger = logging.getLogger(__name__)
 
 
@@ -9,6 +10,8 @@ def send_success_notification(**context):
     year = ti.xcom_pull(task_ids='ingest_trips_data', key='year')
     month = ti.xcom_pull(task_ids='ingest_trips_data', key='month')
 
+    subject = f"Trips Monthly Ingestion Successful | {year}-{month:02d}"
+    
     message = (
         f"Trips Monthly Ingestion Successful | "
         f"Period: {year}-{month:02d} | "
@@ -16,6 +19,12 @@ def send_success_notification(**context):
     )
 
     logger.info(message)
+    
+    send_email(
+        to=os.getenv('ALERT_EMAIL'),
+        subject=subject,
+        html_content=message
+    )
     # TODO: Send to Slack, email, etc.
 
 
@@ -30,7 +39,9 @@ def send_failure_notification(**context):
         error_details.append(f"  Task: {ti.task_id}, Error: {ti.log_url}")
 
     errors = "\n".join(error_details) if error_details else "  No details available"
-
+    
+    subject = f"Alert: Trips Monthly Ingestion Failed | {year}-{month:02d}"
+    
     message = (
         f"Trips Monthly Ingestion Failed | "
         f"Period: {year}-{month:02d} | "
@@ -39,4 +50,10 @@ def send_failure_notification(**context):
     )
 
     logger.error(message)
+    
+    send_email(
+        to=os.getenv('ALERT_EMAIL'),
+        subject=subject,
+        html_content=message
+    )
     # TODO: Send to Slack, email, PagerDuty
