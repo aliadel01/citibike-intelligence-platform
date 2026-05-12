@@ -1,73 +1,57 @@
-# Citibike Analytics Pipeline
+# Citibike Intelligence Platform
 
 > ⚠️ Work in Progress - This project is under active development and not yet complete.
+## Project Overview
+![Project Overview](docs/images/architecture.png)
 
-A real-time + historical analytics system that helps Citibike operations team make data-driven decisions.
+## Data Engineering Phase
 
+### Terraform (Infrastructure as Code)
+Using IaC to create the following resources:
+#### 🔵 Azure
+- Resource Group
+- ADLS Gen2 Storage Account
+- Container (bronze)
+#### ❄️ Snowflake
+- Warehouse (CITIBIKE_DWH)
+- Database (CITIBIKE_DB)
+- Schemas (EXTERNAL, SILVER, GOLD)
+- 2 File Formats (CSV, JSON)
+- An External Stage (BRONZE_STAGE)
+- Storage Integration
 
+### Data Sources
+1. **Batch** Processed Data
+    - Trip Data
+    - Station Metadata
+2. **Real-Time** Data
+    - Station Status (GBFS API)
+<!-- 3. External Data
+    - **Weather** Data
+    - Calendar / Events -->
 
-## Architecture
+### Airflow
+Two DAGs:
+- citibike_monthly_stations_ingestion
+![alt text](docs/images/citibike_monthly_stations_ingestion.png)    
+- citibike_trips_ingestion
+![alt text](docs/images/citibike_trips_ingestion.png)
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  DELIVERABLE COMPONENTS                                         │
-└─────────────────────────────────────────────────────────────────┘
+## Analytics Engineering Phase
+Using dbt
+### Data Modeling & Warehouse
+![Data Model](docs/images/schema.jpg)
+- Trips Data -> fact_trips
+- Station Metadata -> dim_station
+### Data Quality
+Stage-gate approach: external → validate → staging → validate → marts
 
-1. Real-Time Dashboard (Grafana)
-   └─ Shows live + historical bike usage
-
-2. Automated Data Pipeline (Airflow + Kafka)
-   └─ Ingests batch + stream data automatically
-
-3. Data Warehouse (Snowflake)
-   └─ Combined historical + real-time data
-
-4. Infrastructure as Code (Terraform)
-   └─ Entire system reproducible in 1 command
-
-```
-### Project Architecture Diagram:
-![Architecture Diagram](docs/images/architecture.png)
-
-## Business Problems Solved
-
-
-## Data Sources
-
-- **Source**: [Citibike System Data](https://citibikenyc.com/system-data)
-- **Scope**: 2013-2024 (24 months)
-- **Size**: ~50M trips, ~4GB
-- **Format**: CSV
-
-## Repository Structure
-```
-citibike-analytics-pipeline/ 
-├── airflow-dbt/ 
-├── terraform/ 
-├── dashboard/
-└── README.md
-```
-
-## Dashboard Overview
-### Tab 1: Real-Time Operations 
-
-### Tab 2: Historical Analytics 📈
-
-
-## Setup
-
-
-
-License
-
-MIT License - see LICENSE
-Data Attribution
-
-Citibike System Data provided by Lyft Bikes and Scooters, LLC.
-Available at: https://citibikenyc.com/system-data
-Author
-
-GitHub: https://github.com/aliadel
-LinkedIn: https://www.linkedin.com/in/aliadel01/
-
-Built with ❤️ by Ali Adel
+## Streaming Data Pipeline
+Source - Station Status (GBFS API) -> Python Producer -> Kafka Topic -> [Grafana Dashboard](streaming/dashboard.png)
+## Data Analytics Phase
+### Power BI Dashboards
+### Reverse ETL
+## Machine Learning Phase
+Some ideas for future work:
+- **Demand Forecasting**: Predict bike demand at each station for the next hour/day.
+- **Anomaly Detection**: Identify unusual patterns in bike usage or station status.
