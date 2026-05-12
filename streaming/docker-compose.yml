@@ -1,0 +1,60 @@
+version: '3.8'
+
+networks:
+  streaming-net:
+    driver: bridge
+
+services:
+  # --- Redpanda (Kafka Alternative) ---
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:latest
+    container_name: redpanda-0
+    command:
+      - redpanda start
+      - --overprovisioned
+      - --smp 1
+      - --memory 1G
+      - --reserve-memory 0M
+      - --node-id 0
+      - --check=false
+      - --kafka-addr=plaintext://0.0.0.0:29092,external://0.0.0.0:9092
+      - --advertise-kafka-addr=plaintext://redpanda-0:29092,external://localhost:9092
+    ports:
+      - "9092:9092"
+    networks:
+      - streaming-net
+
+  # --- Redpanda Console (UI) ---
+  console:
+    image: docker.redpanda.com/redpandadata/console:latest
+    container_name: redpanda-console
+    environment:
+      - KAFKA_BROKERS=redpanda-0:29092
+    ports:
+      - "8080:8080"
+    networks:
+      - streaming-net
+    depends_on:
+      - redpanda
+
+  # --- Grafana ---
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - streaming-net
+    depends_on:
+      - redpanda
+
+  # --- Python Producer ---
+  citibike-producer:
+    build: .
+    container_name: python-producer
+    environment:
+      - KAFKA_BROKER=redpanda-0:29092 
+    networks:
+      - streaming-net
+    depends_on:
+      - redpanda
