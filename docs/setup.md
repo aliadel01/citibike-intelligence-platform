@@ -1,5 +1,3 @@
-
-
 # Setup dbt & airflow
 Using astro cli, cosmos
 

@@ -47,14 +47,3 @@ services:
       - streaming-net
     depends_on:
       - redpanda
-
-  # --- Python Producer ---
-  citibike-producer:
-    build: .
-    container_name: python-producer
-    environment:
-      - KAFKA_BROKER=redpanda-0:29092 
-    networks:
-      - streaming-net
-    depends_on:
-      - redpanda
