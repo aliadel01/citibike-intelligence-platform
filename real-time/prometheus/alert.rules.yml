@@ -1,0 +1,29 @@
+groups:
+  - name: container_alerts
+    rules:
+      - alert: ContainerDown
+        expr: time() - container_last_seen{name!=""} > 60
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container Down"
+          description: "The container {{ $labels.name }} has been down for more than 1 minute."
+          
+      - alert: HighCPUUsage
+        expr: avg(rate(container_cpu_usage_seconds_total{job="cadvisor"}[5m])) by (name) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage for container {{ $labels.name }} is above 85% for more than 5 minutes."
+
+      - alert: HighMemoryUsage
+        expr: avg(container_memory_usage_bytes{job="cadvisor"} / container_spec_memory_limit_bytes{job="cadvisor"}) by (name) * 100 > 90
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Memory usage"
+          description: "Memory usage for container {{ $labels.name }} is above 90%."

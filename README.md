@@ -18,7 +18,7 @@ The Citibike Intelligence Platform is a comprehensive data engineering and analy
 ### Streaming Data Pipeline
 Source - Station Status (GBFS API) -> Python Producer -> Kafka Topic -> Real-time Grafana Dashboard
 
-![Grafana Dashboard](real-time/bikes_real_time.png)
+![Grafana Dashboard](real-time/dashboards/bikes_real_time.png)
 
 
 ### Data Quality and Validation
@@ -34,6 +34,15 @@ Useing Elementary Data package for data quality checks in dbt:
 ![ Data Quality Dashboard ](docs/images/data_quality.png)
 
 ### Observability, Monitoring and Alerting
+- Container Down CRITICAL alert if any service/container is down.
+- High CPU Usage WARNING if CPU usage 85% for 5 minutes.
+- High Memory Usage WARNING if memory usage is close to 90%.
+
+Integrated Grafana with pre-built production dashboards (Dashboard ID: 14282) to visualize real-time resource utilization (CPU, Memory, and Network I/O) across all pipeline components (Redpanda, Python producers)
+
+![monitor1](real-time/dashboards/monitor1.png)
+![monitor2](real-time/dashboards/monitor2.png)
+
 ### Unit Testing and CI/CD pipeline
 
 ## Data Analytics
