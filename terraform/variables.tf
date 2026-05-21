@@ -39,3 +39,9 @@ variable "azure_tenant_id" {
   type        = string
   description = "Azure Active Directory tenant ID (used for Snowflake storage integration)"
 }
+
+variable "elementary_user_password" {
+  type        = string
+  description = "The password for the dedicated ELEMENTARY_USER service account."
+  sensitive   = true
+}

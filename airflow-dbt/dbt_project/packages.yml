@@ -6,4 +6,4 @@ packages:
   - package: dbt-labs/codegen
     version: 0.14.0
   - package: elementary-data/elementary
-    version: 0.15.1
+    version: 0.23.0

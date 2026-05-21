@@ -9,8 +9,6 @@ The Citibike Intelligence Platform is a comprehensive data engineering and analy
 
 ## Data Engineering
 
-
-
 ### Batch Data Pipeline
 - Ingesting historical trip data from S3 -> Airflow DAGs -> dbt transformations -> Snowflake Data Warehouse
 - Ingesting station metadata from GBFS API -> Airflow DAGs -> dbt transformations -> Snowflake Data Warehouse

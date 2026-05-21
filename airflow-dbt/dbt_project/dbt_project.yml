@@ -5,8 +5,6 @@
 name: 'dbt_project'
 version: '1.0.0'
 
-vars:
-  external_tables_enabled: true
 # This setting configures which "profile" dbt uses for this project.
 profile: 'dbt_project'
 
@@ -27,7 +25,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
-
+vars:
+  external_tables_enabled: true
+  elementary_database: CITIBIKE_DB
+  elementary_schema: ELEMENTARY
+  elementary_full_refresh: true
 # In this example config, we tell dbt to build all models in the example/
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
@@ -37,3 +39,5 @@ models:
     marts:
       +materialized: incremental
     
+  elementary:
+    +schema: elementary
