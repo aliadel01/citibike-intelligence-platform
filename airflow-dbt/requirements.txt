@@ -3,3 +3,5 @@ astronomer-cosmos
 apache-airflow-providers-snowflake
 pandas
 azure-storage-blob
+elementary-data[snowflake]
+astro-run-dag # This package is needed for the astro run command. It will be removed before a deploy

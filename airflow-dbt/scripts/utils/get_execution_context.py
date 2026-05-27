@@ -2,7 +2,7 @@ import logging
 
 def get_execution_context(**context):
     """Get execution date context"""
-    execution_date = context['execution_date']
+    execution_date = context['logical_date']
     year = execution_date.year
     month = execution_date.month
     

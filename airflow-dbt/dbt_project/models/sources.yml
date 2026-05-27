@@ -2,7 +2,7 @@ version: 2
 
 # Note: Schema changed in 2021
 # - Old schema (2013-2020): Has bike_id, birth_year, gender, usertype
-# - New schema (2021+): Has member_casual (usertype in old schema), rideable_type, NO bike_id/birth_year/gender
+# - New schema (2021 (month 2) +): Has member_casual (usertype in old schema), rideable_type, NO bike_id/birth_year/gender
 # but we will only work with (2021+) schema for this project, so we can ignore the old columns
 
 sources:
@@ -42,12 +42,14 @@ sources:
 
           - name: started_at
             data_type: TIMESTAMP_NTZ
+            expression: "TRY_TO_TIMESTAMP(REGEXP_REPLACE(value:c3::varchar, '^\"|\"$', ''))"
             description: "Trip start timestamp (maps to start_time)"
             tests:
               - not_null
 
           - name: ended_at
             data_type: TIMESTAMP_NTZ
+            expression: "TRY_TO_TIMESTAMP(REGEXP_REPLACE(value:c3::varchar, '^\"|\"$', ''))"
             description: "Trip end timestamp (maps to stop_time)"
             tests:
               - not_null
@@ -74,22 +76,26 @@ sources:
 
           - name: start_lat
             data_type: FLOAT
+            expression: "TRY_CAST(value:c9::varchar AS FLOAT)"
             description: "Starting station latitude (maps to 'lat')"
             tests:
               - not_null
 
           - name: start_lng
             data_type: FLOAT
+            expression: "TRY_CAST(value:c9::varchar AS FLOAT)"
             description: "Starting station longitude (maps to 'lon')"
             tests:
               - not_null
 
           - name: end_lat
             data_type: FLOAT
+            expression: "TRY_CAST(value:c9::varchar AS FLOAT)"
             description: "Ending station latitude (maps to 'lat')"
 
           - name: end_lng
             data_type: FLOAT
+            expression: "TRY_CAST(value:c9::varchar AS FLOAT)"
             description: "Ending station longitude (maps to 'lon')"  
 
           - name: member_casual

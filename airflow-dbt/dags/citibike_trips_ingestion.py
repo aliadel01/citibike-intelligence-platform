@@ -11,7 +11,8 @@
     3. Move validated data to final Bronze location
     4. Refresh Snowflake external table
     5. Run dbt transformations
-    6. Log ingestion and send notifications
+    6. Upload Elementary results to Snowflake
+    7. Log ingestion and send notifications
 """
 
 import os
@@ -20,6 +21,7 @@ from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
+from airflow.operators.bash import BashOperator
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.utils.trigger_rule import TriggerRule
 from cosmos import DbtTaskGroup, ProjectConfig, RenderConfig
@@ -49,7 +51,7 @@ with DAG(
     description="Monthly ingestion of Citibike trip data from S3 to Snowflake",
     doc_md=__doc__,
     schedule=None,  # <-- triggered only after stations are ready
-    start_date=datetime(2021, 1, 1),
+    start_date=datetime(2021, 1, 2),
     catchup=True,
     max_active_runs=1,
     tags=["citibike", "batch", "monthly", "trips"],
@@ -103,21 +105,40 @@ with DAG(
         default_args={"retries": 0},
     )
 
-    # Task 7: Success notification
+    # Task 7: Upload Elementary results to Snowflake
+    upload_elementary_results = BashOperator(
+        task_id="upload_elementary_results",
+        bash_command=f"""
+        cd {os.getenv("PATH_TO_DBT_PROJECT")} && \
+        elementary upload-run \
+            --dbt-project-path . \
+            --profiles-dir ~/.dbt
+        """,
+        env={
+            "SNOWFLAKE_ACCOUNT": os.getenv("SNOWFLAKE_ACCOUNT"),
+            "SNOWFLAKE_USER": os.getenv("SNOWFLAKE_USER"),
+            "SNOWFLAKE_PASSWORD": os.getenv("SNOWFLAKE_PASSWORD"),
+            "SNOWFLAKE_WAREHOUSE": os.getenv("SNOWFLAKE_WAREHOUSE"),
+            "SNOWFLAKE_DATABASE": os.getenv("SNOWFLAKE_DATABASE"),
+            "SNOWFLAKE_SCHEMA": "ELEMENTARY",
+        },
+    )
+
+    # Task 8: Success notification
     success_notification = PythonOperator(
         task_id="success_notification",
         python_callable=send_success_notification,
         trigger_rule=TriggerRule.ALL_SUCCESS,
     )
 
-    # Task 8: Failure notification
+    # Task 9: Failure notification
     failure_notification = PythonOperator(
         task_id="failure_notification",
         python_callable=send_failure_notification,
         trigger_rule=TriggerRule.ONE_FAILED,
     )
 
-    # Task 9: End
+    # Task 10: End
     end = EmptyOperator(
         task_id="end",
         trigger_rule=TriggerRule.ALL_DONE,
@@ -134,6 +155,7 @@ with DAG(
     >> move_to_bronze_task
     >> refresh_external_table
     >> dbt_run_trips 
+    >> upload_elementary_results
     >> success_notification
     )
     
@@ -147,4 +169,5 @@ with DAG(
         move_to_bronze_task,
         refresh_external_table,
         dbt_run_trips,
+        upload_elementary_results,
     ] >> failure_notification

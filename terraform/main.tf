@@ -91,6 +91,7 @@ resource "snowflake_file_format" "csv_format" {
   
   format_type = "CSV"
   skip_header = 1
+  null_if     = ["", "NULL", "null", "\"\""]
 }
 
 resource "snowflake_file_format" "json_format" {
