@@ -1,8 +1,5 @@
-> ⚠️ Work in Progress - This project is under active development and not yet complete.
-
-
 # Citibike Intelligence Platform
-The Citibike Intelligence Platform is a comprehensive data engineering and analytics solution designed to process and analyze Citibike's trip and station data. The platform ingests both batch and real-time data, transforms it through a multi-layered architecture, and provides insights via dashboards and machine learning models.
+The Citibike Intelligence Platform is a comprehensive data engineering and analytics solution designed to process and analyze Citibike's trip and station data. The platform ingests both batch and real-time data, transforms it through a multi-layered architecture.
 ## Project Overview
 ![Project Overview](docs/images/architecture.gif)
 
@@ -28,8 +25,12 @@ are logged and alerted for manual review.
 4. **Validation**: The Silver layer undergoes another round of validation to ensure data integrity
 before being loaded into the **Gold layer** (data marts) for analytics and reporting.
 
-Useing Elementary Data package for data quality checks in dbt:
-![ Data Quality Dashboard ](docs/images/data_quality.png)
+Useing **Elementary** Data package for data quality checks in dbt:
+// hey ai can you put these two images side by side? thanks
+<p align="center">
+  <img src="docs/images/quality1.png" width="45%" />
+  <img src="docs/images/quality2.png" width="45%" />
+</p>
 
 ### Observability, Monitoring and Alerting
 - Container Down CRITICAL alert if any service/container is down.
