@@ -40,14 +40,3 @@ Integrated Grafana with pre-built production dashboards (Dashboard ID: 14282) to
 
 ![monitor1](real-time/dashboards/monitor1.png)
 ![monitor2](real-time/dashboards/monitor2.png)
-
-### Unit Testing and CI/CD pipeline
-
-## Data Analytics
-### 1. Power BI Dashboards
-### 2. Deep analytics with Jupyter Notebooks
-### 3. Reverse ETL
-## Machine Learning
-Some ideas for future work:
-- **Demand Forecasting**: Predict bike demand at each station for the next hour/day.
-- **Anomaly Detection**: Identify unusual patterns in bike usage or station status.
