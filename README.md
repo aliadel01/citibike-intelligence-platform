@@ -1,7 +1,7 @@
 # Citibike Intelligence Platform
 The Citibike Intelligence Platform is a comprehensive data engineering and analytics solution designed to process and analyze Citibike's trip and station data. The platform ingests both batch and real-time data, transforms it through a multi-layered architecture.
 ## Project Overview
-![Project Overview](docs/images/architecture.gif)
+![Project Overview](docs/images/architecture.gif.png)
 
 
 ## Data Engineering
